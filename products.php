@@ -1,3 +1,42 @@
+<?php
+   class MyDB extends SQLite3 {
+      function __construct() {
+         $this->open('products.db');
+      }
+   }
+   $db = new MyDB();
+   if(!$db) {
+      echo $db->lastErrorMsg();
+   } else {
+      echo "Opened database successfully\n";
+   }
+
+   $tableExists = $db->querySingle("SELECT name FROM sqlite_master WHERE type='table' AND name='PRODUCTS'");
+
+   if(!$tableExists) {
+      $sql =<<<EOF
+      CREATE TABLE PRODUCTS
+      (ID INT PRIMARY KEY     NOT NULL,
+      NAME           TEXT    NOT NULL,
+      DESCRIPTION            TEXT,
+      PRICE       DECIMAL(10,2),
+      IMAGE_URL TEXT,
+      CATEGORY TEXT);
+      
+EOF;
+
+      $ret = $db->exec($sql);
+      if(!$ret){
+         echo $db->lastErrorMsg();
+      } else {
+         echo "Table created successfully\n";
+      }
+   }
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,8 +55,19 @@
 
 <div class="container_main">
     <div class="container_filter"></div>
-    <div class="container_products"></div>
 
+
+    <div class="container_products"></div>
+<?php 
+
+$res = $db->query("SELECT * FROM PRODUCTS");
+while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
+    echo $row['NAME'] . "<br>";
+}
+
+
+
+?>
 </div>
 
 </body>
