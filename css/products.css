@@ -1,0 +1,12 @@
+.container_products {
+  display: grid;
+  grid-template-columns: repeat(4, 200px);
+  gap: 20px;
+}
+
+.container_product {
+  outline: 1px solid black; 
+  width: 200px;
+  height: 200px;
+  padding: 5px;
+}/*# sourceMappingURL=products.css.map */

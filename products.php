@@ -42,6 +42,7 @@ EOF;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/products.css">
     <title>Document</title>
 </head>
 <body>
@@ -57,17 +58,26 @@ EOF;
     <div class="container_filter"></div>
 
 
-    <div class="container_products"></div>
+    <div class="container_products">
 <?php 
 
 $res = $db->query("SELECT * FROM PRODUCTS");
 while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
-    echo $row['NAME'] . "<br>";
+    $id = $row['ID'];
+    $name = htmlspecialchars($row['NAME']);
+    $price = htmlspecialchars($row['PRICE']);
+
+    echo '<a class="product-card" href="product.php?id=' . urlencode($id) . '">';
+    echo '  <div class="card-inner">';
+    echo "    <h3>$name</h3>";
+    echo "    <div class=\"price\">$price</div>";
+    echo '  </div>';
+    echo '</a>';
 }
-
-
-
 ?>
+</div>
+
+
 </div>
 
 </body>
