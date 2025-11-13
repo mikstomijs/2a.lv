@@ -1,1 +1,29 @@
-/*# sourceMappingURL=index.css.map */
+.container_main {
+  display: flex;
+}
+
+a {
+  display: none;
+}
+
+.container_products {
+  gap: 5px;
+  display: grid;
+  grid-template-columns: repeat(4, 200px);
+}
+
+.container_product {
+  outline: 1px solid black;
+  width: 200px;
+  height: 200px;
+  padding: 5px;
+}
+
+.container_filter {
+  width: 200px;
+}
+
+.navbar {
+  display: flex;
+  gap: 20px;
+}/*# sourceMappingURL=index.css.map */

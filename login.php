@@ -3,7 +3,7 @@ session_start();
 
    class MyDB extends SQLite3 {
       function __construct() {
-         $this->open('test.db');
+         $this->open('products.db');
       }
    }
    $db = new MyDB();
@@ -22,7 +22,8 @@ session_start();
       NAME           TEXT    NOT NULL,
       SURNAME            TEXT,
       EMAIL        CHAR(50) UNIQUE,
-      PASSWORD CHAR(50)) ;
+      PASSWORD CHAR(255),
+      TOKEN  CHAR(50));
 EOF;
 
       $ret = $db->exec($sql);
@@ -93,6 +94,9 @@ if ($row) {
   
         if (password_verify($password, $row['PASSWORD'])) {
             $loggedIn = true;
+            $_SESSION['loggedin'] = true;
+            $_SESSION['name'] = $row['NAME'];
+
         } else {
             echo "Nepareizs epasts vai parole";
             $loggedIn = false;
@@ -110,31 +114,36 @@ if ($row) {
 if ($loggedIn) {
    if (!empty($_POST["rememberme"]))
             {
+                $id = $row['ID'];    
 
+                $token = bin2hex(random_bytes(32));
       
-                setcookie("user_login", $email, time() +
-                                    (10 * 365 * 24 * 60 * 60));
+                setcookie("user_login", $token, time() +
+                                    (86400 * 30));
+                $stmt = $db->prepare('UPDATE LOGININFO SET TOKEN = :token WHERE ID = :id');
+                $stmt->bindValue(':token', $token, SQLITE3_TEXT);
+                $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+                $result = $stmt->execute();
+              
+                if(!$result){
+                   echo $db->lastErrorMsg();
+                } 
+           
 
-         
-                setcookie("user_password", $row['PASSWORD'], time() +
-                                    (10 * 365 * 24 * 60 * 60));
-
-      
-                $_SESSION["password"] = $row['PASSWORD'];
-
+                $_SESSION["cookie"] = $token;
+                header("location:index.php");
             }
             else
             {
                 if (isset($_COOKIE["user_login"]))
                 {
                     setcookie("user_login", "");
+                    header("location:index.php");
                 }
-                if (isset($_COOKIE["user_password"]))
-                {
-                    setcookie("user_password", "");
-                }
+                else {header("location:index.php");}
+              
             }
-            header("location:products.php");
+            
         }
         else
         {
