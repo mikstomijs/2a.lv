@@ -3,17 +3,6 @@ session_start();
 if (isset($_SESSION['password'])){
 header("location:products.php");
 }
-
-
-
-
-
-
-
-
-
-
-
    class MyDB extends SQLite3 {
       function __construct() {
          $this->open('products.db');
@@ -37,6 +26,7 @@ header("location:products.php");
       EMAIL        CHAR(50) UNIQUE,
       PASSWORD CHAR(255),
       TOKEN  CHAR(50));
+;
 EOF;
 
       $ret = $db->exec($sql);

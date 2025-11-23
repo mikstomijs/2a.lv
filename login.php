@@ -96,6 +96,8 @@ if ($row) {
             $loggedIn = true;
             $_SESSION['loggedin'] = true;
             $_SESSION['name'] = $row['NAME'];
+            $_SESSION['user_id'] = $row['ID'];
+          
 
         } else {
             echo "Nepareizs epasts vai parole";

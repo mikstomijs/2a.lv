@@ -37,7 +37,11 @@ EOF;
     <title>Document</title>
 </head>
 <body>
-        
+        <div class="navbar">
+<a href="index.php"><button>Internetveikals</button></a>
+
+
+        </div>
 <?php
 $id = $_GET['id'];
 $res = $db->query("SELECT * FROM PRODUCTS WHERE ID  = $id");
@@ -56,8 +60,24 @@ echo "<div class='container_product'>";
 echo $name . "<br>";
 echo $price . "<br>";
 echo $description . "<br>";
-echo "</div>"
+echo "<form method='POST'><button type='submit' id='$id' name='cart'>Add to cart</button></form>";
+echo "</div>";
 
+
+if (isset($_POST['cart'])) {
+  
+    session_start();
+  $user_id = $_SESSION['user_id'];
+  $product_id = $db->escapeString($id);
+  $sql =<<<EOF
+    INSERT INTO cart_items (user_id,product_id,quantity)
+   VALUES ('$user_id','$product_id',1);
+EOF;
+  $ret = $db->exec($sql);
+  if (!$ret) {
+    echo $db->lastErrorMsg();
+  }
+}
 
 ?>
 

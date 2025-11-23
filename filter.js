@@ -33,7 +33,19 @@ checkboxes.forEach(function(checkbox) {
   });
 });
 
+function cart() {
+  const cart = document.getElementById('cart');
+  if (!cart) return;
+
+
+  const isVisible = cart.style.display !== 'none';
+  if (isVisible) {
+    cart.style.display = 'none';
+    return;
+  }
+  cart.style.display = 'block';
 
 
 
+}
 

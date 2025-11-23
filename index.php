@@ -16,7 +16,7 @@ if (!isset($_SESSION['loggedin'])) {
    }
 
    $tableExists = $db->querySingle("SELECT name FROM sqlite_master WHERE type='table' AND name='PRODUCTS'");
-
+   $tableExists2 = $db->querySingle("SELECT name FROM sqlite_master WHERE type='table' AND name='CART'");
    if(!$tableExists) {
       $sql =<<<EOF
       CREATE TABLE PRODUCTS
@@ -34,6 +34,25 @@ EOF;
          echo $db->lastErrorMsg();
       } 
    }
+
+
+   if (!$tableExists2) {
+   $db->exec(<<<SQL
+CREATE TABLE IF NOT EXISTS cart_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  product_id INTEGER NOT NULL,
+  quantity INTEGER NOT NULL DEFAULT 1,
+  added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, product_id)
+);
+SQL
+);
+   }
+
+
+
+
 $res = $db->query("SELECT * FROM LOGININFO");
 
 
@@ -45,6 +64,8 @@ while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
 if ($_COOKIE['user_login'] == $row['TOKEN']){
 $_SESSION['loggedin'] = true;
 $_SESSION['name']  = $row['NAME'];
+
+
 break;
 }
 }
@@ -64,7 +85,7 @@ break;
     
     <div class="navbar">
 <p>Internetveikals</p>
-<p>Iepirkumu grozs</p>
+
    <p>Sveicināts, <?php if(isset($_SESSION['loggedin'])) {echo $_SESSION['name'] . "!";}else {echo "viesi" . "!";} 
    ; ?></p>
 
@@ -73,11 +94,38 @@ break;
 if (!isset($_SESSION['loggedin'])) {
    echo "<button id='btnRegister'>Reģistrēties</button>";
    echo "<button id='btnLogin'>Ienākt</button>";
+} else {
+   echo "<button class='cart_button' onclick=cart() >Iepirkumu grozs</button>";
 }
+?>
+<div class="cart" id="cart" style='display: none'>
+<?php
+$totalCount = 0;
+$user_id = $_SESSION['user_id'];;
+$sql = <<<EOF
+      SELECT * FROM cart_items WHERE user_id = $user_id
+      EOF;
+$res = $db->query($sql);
 
+while($row = $res->fetchArray(SQLITE3_ASSOC)) {
+   $product = $row['product_id'];
+   $qty = $row['quantity']; 
+   $res2 = $db->query("SELECT * FROM PRODUCTS WHERE ID = $product");
+while($row2 = $res2->fetchArray(SQLITE3_ASSOC) ) {
+    $name = htmlspecialchars($row2['NAME']);
+    $price = $row2['PRICE'] * $qty;
 
+    echo $name . " " . $price . " " . $qty;
+    $totalCount += $qty;
+  
+}
+}
+echo "Kopējais priekšmetu skaits: " . $totalCount; 
 ?>
 
+
+
+</div>
 
 <input type="text" placeholder="Meklēt">
 
@@ -86,7 +134,13 @@ if (!isset($_SESSION['loggedin'])) {
 
 
 <form method="post" style="display:inline;">
-<button type="submit" name="logout">Logout</button>
+
+<?php 
+if (isset($_SESSION['loggedin']))
+echo '<button type="submit" name="logout">Logout</button>'
+
+?>
+
 </form>
 <?php
 
@@ -151,7 +205,8 @@ while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
 <script type="text/javascript">
 
     document.getElementById("btnRegister").onclick = function () {
-        location.href = "register.php";
+    
+    location.href = "register.php";
     };
      document.getElementById("btnLogin").onclick = function () {
         location.href = "login.php";
