@@ -100,7 +100,7 @@ if (!isset($_SESSION['loggedin'])) {
 ?>
 <div class="cart" id="cart" style='display: none'>
 <?php
-$totalCount = 0;
+if (isset($_SESSION['user_id'])) {$totalCount = 0;
 $user_id = $_SESSION['user_id'];;
 $sql = <<<EOF
       SELECT * FROM cart_items WHERE user_id = $user_id
@@ -120,7 +120,8 @@ while($row2 = $res2->fetchArray(SQLITE3_ASSOC) ) {
   
 }
 }
-echo "Kopējais priekšmetu skaits: " . $totalCount; 
+echo "Kopējais priekšmetu skaits: " . $totalCount; }
+
 ?>
 
 
