@@ -26,8 +26,21 @@ a {
 .navbar {
   display: flex;
   gap: 20px;
+  align-items: center;
 }
 
 .cart {
   display: none;
+  position: absolute;
+  height: auto;
+  width: auto;
+  background-color: white;
+  outline: 1px solid black;
+}
+
+.cart_button {
+  width: 8rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
 }/*# sourceMappingURL=index.css.map */

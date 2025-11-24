@@ -1,16 +1,9 @@
-
-
-
-
 var products = document.querySelectorAll("a[name=product]");
 var checkboxes = document.querySelectorAll("input[type=checkbox][name=filter]");
  products.forEach(function(product) {
       product.style.display = "block";
     });
 let enabledSettings = [];
-
-
-
 
 
 checkboxes.forEach(function(checkbox) {

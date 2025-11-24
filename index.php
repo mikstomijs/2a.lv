@@ -4,7 +4,6 @@ if (!isset($_SESSION['loggedin'])) {
    $_SESSION['name'] = "viesi";
 }
 
-
    class MyDB extends SQLite3 {
       function __construct() {
          $this->open('products.db');
@@ -35,7 +34,6 @@ EOF;
       } 
    }
 
-
    if (!$tableExists2) {
    $db->exec(<<<SQL
 CREATE TABLE IF NOT EXISTS cart_items (
@@ -51,21 +49,12 @@ SQL
    }
 
 
-
-
 $res = $db->query("SELECT * FROM LOGININFO");
-
-
-
-
 if(isset($_COOKIE['user_login'])) {
-
 while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
 if ($_COOKIE['user_login'] == $row['TOKEN']){
 $_SESSION['loggedin'] = true;
 $_SESSION['name']  = $row['NAME'];
-
-
 break;
 }
 }
@@ -82,23 +71,22 @@ break;
     <title>Document</title>
 </head>
 <body>
-    
-    <div class="navbar">
+<!-- Navbar -->
+<div class="navbar">
 <p>Internetveikals</p>
-
-   <p>Sveicināts, <?php if(isset($_SESSION['loggedin'])) {echo $_SESSION['name'] . "!";}else {echo "viesi" . "!";} 
-   ; ?></p>
-
+<p>Sveicināts, <?php if(isset($_SESSION['loggedin'])) {echo $_SESSION['name'] . "!";}else {echo "viesi" . "!";} ?></p>
 
 <?php
 if (!isset($_SESSION['loggedin'])) {
    echo "<button id='btnRegister'>Reģistrēties</button>";
    echo "<button id='btnLogin'>Ienākt</button>";
 } else {
-   echo "<button class='cart_button' onclick=cart() >Iepirkumu grozs</button>";
+   echo "<div class=cart_main><button class='cart_button' onclick=cart() >Iepirkumu grozs</button>";
 }
 ?>
+
 <div class="cart" id="cart" style='display: none'>
+
 <?php
 if (isset($_SESSION['user_id'])) {$totalCount = 0;
 $user_id = $_SESSION['user_id'];;
@@ -115,27 +103,20 @@ while($row2 = $res2->fetchArray(SQLITE3_ASSOC) ) {
     $name = htmlspecialchars($row2['NAME']);
     $price = $row2['PRICE'] * $qty;
 
-    echo $name . " " . $price . " " . $qty;
+    echo "<p>" . $name . " " . $price . " " . $qty . "</p>";
     $totalCount += $qty;
   
 }
 }
-echo "Kopējais priekšmetu skaits: " . $totalCount; }
+echo "Kopējais preču skaits: " . $totalCount . "</div>"; }
 
 ?>
-
-
-
 </div>
-
-<input type="text" placeholder="Meklēt">
-
+<form method="get" action="search.php"><input type="text" name="search" required placeholder="Meklēt"> 
+<button type ="submit">Meklēt</button></form>
 </div>
-
-
 
 <form method="post" style="display:inline;">
-
 <?php 
 if (isset($_SESSION['loggedin']))
 echo '<button type="submit" name="logout">Logout</button>'
@@ -143,8 +124,8 @@ echo '<button type="submit" name="logout">Logout</button>'
 ?>
 
 </form>
-<?php
 
+<?php
 if(isset($_POST['logout'])) {
    setcookie('user_login', '', time() - 3600, '/');
    unset($_COOKIE['user_login']);
@@ -153,36 +134,29 @@ if(isset($_POST['logout'])) {
    header("location: index.php");
    echo '<script>window.location.href = window.location.pathname;</script>';
 }
-
 ?>
 
 
 </div>
+<!-- Navbar beigas-->
 
+<!-- Galvenais div -->
 <div class="container_main">
     <div class="container_filter">
+      <!-- Filtru izvade + izvēlne -->
 <?php
-
-
-   
 $res = $db->query("SELECT DISTINCT CATEGORY FROM PRODUCTS");
-
 while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
 $category = htmlspecialchars($row['CATEGORY']);
 $categoryTrim = str_replace('_', ' ', $category);
 echo $categoryTrim .  "<input type='checkbox' name='filter' id=$category value=$category>". "<br>"  ;
-
 }
-
-
-
 ?>
 </div>
+
+<!-- Produktu izvade -->
     <div class="container_products">
 <?php 
-
-
-
 $res = $db->query("SELECT * FROM PRODUCTS");
 while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
     $id = $row['ID'];
@@ -193,7 +167,7 @@ while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
     echo '<a class="product-card" href="product.php?id=' . urlencode($id) . '" id="'. $category . '" name="product" value="' . $category . '">';
     echo '  <div class="card-inner">';
     echo "    <h3>$name</h3>";
-    echo "    <div class='price'>$price</div>";
+    echo "    <div class='price'>$price €</div>";
     echo '  </div>';
     echo '</a>';
 }

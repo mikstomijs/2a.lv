@@ -58,9 +58,9 @@ $description = htmlspecialchars($row['DESCRIPTION']);
 
 echo "<div class='container_product'>";
 echo $name . "<br>";
-echo $price . "<br>";
+echo $price . " €" . "<br>";
 echo $description . "<br>";
-echo "<form method='POST'><button type='submit' id='$id' name='cart'>Add to cart</button></form>";
+echo "<form method='POST'><button type='submit' id='$id' name='cart'>Add to cart</button> <label for='quantity'>Quantity</label><input type='number' id='quantity' name='quantity' min='1' max='999'></form>";
 echo "</div>";
 
 
@@ -69,9 +69,10 @@ if (isset($_POST['cart'])) {
     session_start();
   $user_id = $_SESSION['user_id'];
   $product_id = $db->escapeString($id);
+  $qty = $_POST['quantity'];
   $sql =<<<EOF
     INSERT INTO cart_items (user_id,product_id,quantity)
-   VALUES ('$user_id','$product_id',1);
+   VALUES ('$user_id','$product_id',$qty);
 EOF;
   $ret = $db->exec($sql);
   if (!$ret) {
