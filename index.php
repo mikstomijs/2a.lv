@@ -55,6 +55,7 @@ while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
 if ($_COOKIE['user_login'] == $row['TOKEN']){
 $_SESSION['loggedin'] = true;
 $_SESSION['name']  = $row['NAME'];
+$_SESSION['user_id'] = $row['ID'];
 break;
 }
 }
@@ -73,27 +74,36 @@ break;
 <body>
 <!-- Navbar -->
 <div class="navbar">
-<p>Internetveikals</p>
-<p>Sveicināts, <?php if(isset($_SESSION['loggedin'])) {echo $_SESSION['name'] . "!";}else {echo "viesi" . "!";} ?></p>
+<p><a href="index.php">2a.lv</a></p>
+<p>Welcome, <?php if(isset($_SESSION['loggedin'])) {echo $_SESSION['name'] . "!";}else {echo "viesi" . "!";} ?></p>
 
 <?php
 if (!isset($_SESSION['loggedin'])) {
-   echo "<button id='btnRegister'>Reģistrēties</button>";
-   echo "<button id='btnLogin'>Ienākt</button>";
+   echo "<button id='btnRegister'>Register</button>";
+   echo "<button id='btnLogin'>Login</button>";
 } else {
-   echo "<div class=cart_main><button class='cart_button' onclick=cart() >Iepirkumu grozs</button>";
+   echo "<div class=cart_main><button class='cart_button' onclick=cart() >Shopping cart</button>";
 }
 ?>
-
+<!-- Iepirkumu grozs -->
 <div class="cart" id="cart" style='display: none'>
 
 <?php
-if (isset($_SESSION['user_id'])) {$totalCount = 0;
-$user_id = $_SESSION['user_id'];;
+if (isset($_SESSION['user_id'])) {$totalCount = 0; $totalPrice = 0;
+$user_id = $_SESSION['user_id'];
 $sql = <<<EOF
       SELECT * FROM cart_items WHERE user_id = $user_id
       EOF;
 $res = $db->query($sql);
+
+if (isset($_POST['remove'])) {
+   $product_id = $_POST['remove'];
+   $sql = <<<EOF
+      DELETE FROM cart_items WHERE user_id = $user_id AND product_id = $product_id
+      EOF;
+
+   $res3 = $db->query($sql);
+}
 
 while($row = $res->fetchArray(SQLITE3_ASSOC)) {
    $product = $row['product_id'];
@@ -103,17 +113,20 @@ while($row2 = $res2->fetchArray(SQLITE3_ASSOC) ) {
     $name = htmlspecialchars($row2['NAME']);
     $price = $row2['PRICE'] * $qty;
 
-    echo "<p>" . $name . " " . $price . " " . $qty . "</p>";
+    echo "<p>" . $name . " " . $price . "€ " . $qty . "x" . "</p>" . "<form method='post'><button type=submit name='remove' value='$product'>Remove</button></form>";
     $totalCount += $qty;
+    $totalPrice += $price;
   
 }
 }
-echo "Kopējais preču skaits: " . $totalCount . "</div>"; }
+echo "Total item count: " . $totalCount . "<br>";
+echo "Total sum: " .  $totalPrice . "</div>";}
 
 ?>
 </div>
-<form method="get" action="search.php"><input type="text" name="search" required placeholder="Meklēt"> 
-<button type ="submit">Meklēt</button></form>
+<!-- Iepirkumu grozs -->
+<form method="get" action="search.php"><input type="text" name="search" required placeholder="Search anything"> 
+<button type ="submit">Search!</button></form>
 </div>
 
 <form method="post" style="display:inline;">
@@ -144,27 +157,78 @@ if(isset($_POST['logout'])) {
 <div class="container_main">
     <div class="container_filter">
       <!-- Filtru izvade + izvēlne -->
+
+<div class='filter-item'>
+   <label>Sort</label>
+      <select id="sort">
+<option value="default">--Select--</option>
+<option value="LtH">Low to high (ascending)</option>
+<option value="HtL">High to low (descending)</option>
+      </select>
+      </div>
+
 <?php
 $res = $db->query("SELECT DISTINCT CATEGORY FROM PRODUCTS");
 while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
 $category = htmlspecialchars($row['CATEGORY']);
 $categoryTrim = str_replace('_', ' ', $category);
-echo $categoryTrim .  "<input type='checkbox' name='filter' id=$category value=$category>". "<br>"  ;
+echo "<div class='filter-item'>
+        <label>$categoryTrim</label>
+        <input type='checkbox' name='filter' id='$category' value='$category'>
+      </div>";
 }
+
+$minQuery = $db->query("SELECT MIN(PRICE) FROM PRODUCTS");
+$min = $minQuery->fetchArray(SQLITE3_ASSOC);
+$maxQuery = $db->query("SELECT MAX(PRICE) FROM PRODUCTS");
+$max = $maxQuery->fetchArray(SQLITE3_ASSOC);
+
+
+
+
 ?>
+
+
+<div id="rangeBox">
+    <div class="range-wrapper">
+      <form method="get">
+        <div class="range-group">
+            <input type="range" id="slider0to50" step="5" min="1" max="500">
+            <input type="number" step="5" id="min" name="min" min="1" max="500" required placeholder="Minimal price">
+        </div>
+        <div class="range-group">
+            <input type="range" id="slider51to100" step="5" min="500" max="<?= $max["MAX(PRICE)"]+1?>">
+            <input type="number" step="5" id="max" name="max" min="500" max="<?= $max["MAX(PRICE)"]+1 ?>" required placeholder="Maximum price">
+        </div>
+    </div>
+    <button type="submit">Go</button>
+   </form>
+</div>
+
+
+
 </div>
 
 <!-- Produktu izvade -->
     <div class="container_products">
 <?php 
-$res = $db->query("SELECT * FROM PRODUCTS");
+if (!empty($_GET['min']) && !empty($_GET['max'])) {
+   $min = $_GET['min'];
+   $max = $_GET['max'];
+   $stmt = $db->prepare("SELECT * FROM PRODUCTS WHERE PRICE >= :min AND PRICE <= :max");
+   $stmt->bindValue(':min', $min, SQLITE3_FLOAT);
+      $stmt->bindValue(':max', $max, SQLITE3_FLOAT);
+   $res = $stmt->execute();
+} else {$res = $db->query("SELECT * FROM PRODUCTS");};
+
+
 while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
     $id = $row['ID'];
     $name = htmlspecialchars($row['NAME']);
     $price = htmlspecialchars($row['PRICE']);
     $category = htmlspecialchars($row['CATEGORY']);
 
-    echo '<a class="product-card" href="product.php?id=' . urlencode($id) . '" id="'. $category . '" name="product" value="' . $category . '">';
+    echo '<a class="product-card" href="product.php?id=' . urlencode($id) . '" id="'. $category . '" name="product" value="' . $category . '" price="' . $price . '">';
     echo '  <div class="card-inner">';
     echo "    <h3>$name</h3>";
     echo "    <div class='price'>$price €</div>";
@@ -190,5 +254,6 @@ while($row = $res->fetchArray(SQLITE3_ASSOC) ) {
 
 </script>
 <script src="filter.js"></script>
+<script src="slider.js"></script>
 </body>
 </html>

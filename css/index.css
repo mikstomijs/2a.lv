@@ -1,15 +1,17 @@
 .container_main {
   display: flex;
-}
-
-a {
-  display: none;
+  align-items: flex-start;
 }
 
 .container_products {
   gap: 5px;
   display: grid;
   grid-template-columns: repeat(4, 200px);
+  justify-self: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-left: 5%;
+  width: 100%;
 }
 
 .container_product {
@@ -21,6 +23,16 @@ a {
 
 .container_filter {
   width: 200px;
+  display: flex;
+  flex-direction: column;
+  margin-left: 5%;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .navbar {
@@ -43,4 +55,9 @@ a {
   background-color: transparent;
   border: none;
   cursor: pointer;
+}
+
+.range-group {
+  display: flex;
+  flex-direction: column;
 }/*# sourceMappingURL=index.css.map */

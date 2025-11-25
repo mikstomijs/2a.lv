@@ -23,8 +23,50 @@ checkboxes.forEach(function(checkbox) {
 
       }
     });
+
   });
 });
+
+
+
+
+
+
+const sort = document.getElementById('sort');
+const productContainer = document.querySelector(".container_products");
+const productsArray = Array.from(document.querySelectorAll(".product-card"));
+const originalProducts = Array.from(products); 
+
+sort.addEventListener('change', function() {
+    const sortOrder = this.value;
+    let sortedProducts;
+
+    if (sortOrder === "LtH") {
+        sortedProducts = productsArray.sort(function(a, b) {
+            return parseFloat(a.getAttribute('price')) - parseFloat(b.getAttribute('price'));
+        });
+    } else if (sortOrder === "HtL") {
+        sortedProducts = productsArray.sort(function(a, b) {
+            return parseFloat(b.getAttribute('price')) - parseFloat(a.getAttribute('price'));
+        });
+    } else {
+        sortedProducts = originalProducts;
+    }
+
+    sortedProducts.forEach(function(product) {
+        productContainer.appendChild(product);
+    });
+});
+
+
+
+
+
+
+
+
+
+
 
 function cart() {
   const cart = document.getElementById('cart');
