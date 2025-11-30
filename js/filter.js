@@ -24,6 +24,9 @@ checkboxes.forEach(function(checkbox) {
       }
     });
 
+
+
+
   });
 });
 
@@ -60,44 +63,8 @@ sort.addEventListener('change', function() {
 
 
 
-function cart() {
-  const cart = document.getElementById('cart');
-  if (!cart) return;
 
 
-  const isVisible = cart.style.display !== 'none';
-  if (isVisible) {
-    cart.style.display = 'none';
-    return;
-  }
-  cart.style.display = 'block';
-
-
-
-}
-
-
-
-let isShown = false;
-function extraFilter() {
-  const hiddenFilters = document.querySelectorAll('#extrafilter');
-  const btn = document.getElementById('extraFilterBtn');
-
-  if (isShown) {
-
-    hiddenFilters.forEach(filter => {
-      filter.style.display = "none";
-    });
-    isShown = false;
-    btn.innerHTML = "See more";
-  } else {
-    hiddenFilters.forEach(filter => {
-      filter.style.display = "block";
-    });
-    isShown = true; 
-    btn.innerHTML = "See less";
-  }
-}
 
 
 

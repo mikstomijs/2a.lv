@@ -102,6 +102,7 @@ if ($row) {
         } else {
             echo "Nepareizs epasts vai parole";
             $loggedIn = false;
+            
         }
     } else {
         echo "Nepareizs epasts vai parole";

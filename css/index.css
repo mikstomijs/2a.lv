@@ -4,19 +4,15 @@
 
 .container_main {
   display: flex;
-  align-items: flex-start;
   margin-top: 2%;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .container_products {
   gap: 15px;
   display: grid;
   grid-template-columns: repeat(4, 200px);
-  justify-self: center;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-left: 5%;
-  width: 100%;
 }
 
 .product-card {
@@ -27,6 +23,12 @@
   box-shadow: 2px 4px 6px rgba(2, 2, 2, 0.3);
   text-decoration: none;
   color: black;
+  display: block;
+}
+
+.temp {
+  width: 250px;
+  margin-right: 5%;
 }
 
 .container_filter {
@@ -65,6 +67,7 @@
   padding-right: 30px;
   display: flex;
   gap: 30px;
+  align-items: center;
 }
 
 .navbar a {
@@ -75,6 +78,7 @@
 .logout_button {
   float: right;
   font-size: 16px;
+  width: 8rem;
 }
 
 .search_button {
@@ -95,12 +99,54 @@
   width: auto;
   background-color: white;
   outline: 1px solid black;
+  padding: 5px;
 }
 
 .cart_button {
   width: 8rem;
   border: none;
   cursor: pointer;
+  font-size: 16px;
+}
+
+.cart_main {
+  padding-bottom: 10px;
+}
+
+.favorites {
+  display: none;
+  position: absolute;
+  height: auto;
+  width: auto;
+  background-color: white;
+  outline: 1px solid black;
+}
+
+.favorites_button {
+  width: 8rem;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.favorites_main {
+  padding-bottom: 10px;
+}
+
+.account {
+  display: none;
+  position: absolute;
+  right: 0;
+  height: auto;
+  width: auto;
+  background-color: white;
+  outline: 1px solid black;
+  padding: 5px;
+  gap: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+#btnRegister, #btnLogin, #btnAccount {
   font-size: 16px;
 }
 
@@ -139,4 +185,35 @@ button {
 button:hover {
   background-color: rgb(156, 154, 154);
   transition: 0.3s;
+}
+
+@media only screen and (max-width: 1168px) {
+  .product-card {
+    font-size: 12px;
+    width: 150px;
+    height: 80px;
+  }
+  .container_products {
+    grid-template-columns: repeat(3, 160px);
+  }
+  .form {
+    display: flex;
+  }
+}
+@media only screen and (max-width: 780px) {
+  .container_products {
+    grid-template-columns: repeat(2, 160px);
+  }
+  .search_input {
+    font-size: 12px;
+    height: 70%;
+  }
+  #navbar_button {
+    font-size: 12px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .container_products {
+    grid-template-columns: repeat(1, 160px);
+  }
 }/*# sourceMappingURL=index.css.map */

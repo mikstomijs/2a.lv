@@ -45,6 +45,8 @@ EOF;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Internetveikals</title>
+       <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+       <link rel="stylesheet" href="css/register.css"
 </head>
 <body>
 
@@ -61,7 +63,7 @@ EOF;
         <input type="text" id="surname" name="surname" placeholder="Jūsu uzvārds" required><br>
 
                 <label for="surname">E-pasts:</label>
-        <input type="text" id="email" name="email" placeholder="Jūsu e-pasts" required><br>
+        <input type="email" id="email" name="email" placeholder="Jūsu e-pasts" required><br>
 
    
         <label for="password">Parole:</label>
@@ -93,10 +95,20 @@ EOF;
         $count = $db->querySingle("SELECT COUNT(*) as count FROM LOGININFO");
     $count++;
 
-    $sql =<<<EOF
+
+
+
+
+        $insertStmt = $db->prepare("    
     INSERT OR IGNORE INTO LOGININFO (ID,NAME,SURNAME,EMAIL,PASSWORD)
-    VALUES ('$count','$name','$surname','$email','$hashed_password');
-EOF;
+    VALUES (:id, :name, :surname, :email, :pw);");
+        $insertStmt->bindValue(':id', $count, SQLITE3_INTEGER);
+        $insertStmt->bindValue(':name', $name, SQLITE3_TEXT);
+        $insertStmt->bindValue(':surname', $surname, SQLITE3_TEXT);
+         $insertStmt->bindValue(':email', $email, SQLITE3_TEXT);
+                $insertStmt->bindValue(':pw', $hashed_password, SQLITE3_TEXT);
+        $insertStmt->execute();
+
 
 
    $ret = $db->exec($sql);

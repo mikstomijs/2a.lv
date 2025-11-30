@@ -1,7 +1,13 @@
+
+
+
+
 var sliderLeft=document.getElementById("slider0to50");
  var sliderRight=document.getElementById("slider51to100");
  var inputMin=document.getElementById("min");
  var inputMax=document.getElementById("max");
+sliderRight.min = sliderLeft.value;
+    inputMax.min = sliderLeft.value;
 
 ///value updation from input to slider
 //function input update to slider
